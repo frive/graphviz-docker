@@ -1,0 +1,16 @@
+stages:
+- build
+variables:
+  IMAGE: registry.gitlab.com/frive/graphviz
+Image:
+  stage: build
+  image: docker:latest
+  services:
+  - docker:dind
+  script:
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+  - docker build --pull -t $IMAGE:$CI_BUILD_REF_NAME -t $IMAGE:latest .
+  - docker push $IMAGE:latest
+  - docker push $IMAGE:$CI_BUILD_REF_NAME
+  only:
+  - tags
